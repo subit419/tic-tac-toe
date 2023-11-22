@@ -48,7 +48,6 @@ body {
     margin: 30px;
 }
 
-
 .game-status {
     display: flex;
     width: 15vw;
@@ -110,6 +109,12 @@ body {
     justify-content: center;
     align-content: center;
     gap: 15px;
+}
+
+[class*='clicked'] {
+    transform: scale(.95) translateY(5px);
+    box-shadow: 0 0 0, inset 0 2px 10px rgba(0, 0, 0, .4);
+    filter: brightness(1.2);
 }
 
 .x-score-card, .tie-score-card, .o-score-card {
