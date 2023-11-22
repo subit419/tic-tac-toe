@@ -4,19 +4,24 @@
     --grey: #A9BEC8;
     --dark-cyan: #34C3BE;
     --lighten-yellow: #F2B138;
-    font-family: 'Outfit', sans-serif;
+    
 
 }
 * {
     padding: 0;
     margin: 0;
 }
+body {
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    font-family: 'Outfit', sans-serif;
+}
 
-h2, .logo, .undo {
+.game-status h2, .logo, .undo {
     display:flex;
     gap: 10px;
     align-items: center;
-    color: var(--grey)
+    color: var(--grey);
 }
 
 .turn-icon {
@@ -70,11 +75,63 @@ h2, .logo, .undo {
     display: none;
 } */
 
-.game-section {
+.main {
     grid-row: 2 / 3;
+    width: 100vw;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.game-grid {
+    width: 350px;
+    height: 350px;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-rows: 1fr 1fr 1fr;
+    gap: 25px;
+}
+
+.game-grid div {
+    background: var(--secondary);
+    border-radius: 5px;
+    font-weight: 700;
+    display: grid;
+    place-items: center;
+    font-size: 3.5rem;
+    outline: 2px solid rgba(255, 255, 255, .2);
+    transition: all .5s ease;
+    box-shadow: 0 10px 10px rgba(0, 0, 0, .5);
 }
 
 .score-section {
     grid-row: 3 / 4;
+    display: flex;
+    justify-content: center;
+    align-content: center;
+    gap: 15px;
 }
 
+.x-score-card, .tie-score-card, .o-score-card {
+
+    width: 10vw;
+    height: 5vw;
+    border-radius: 10px;
+    padding: 10px;
+    margin: 10px;
+    align-items: center;
+    text-align: center;
+    color: var(--primary);
+}
+
+.x-score-card {
+    background: var(--dark-cyan);
+}
+
+.tie-score-card {
+    background: var(--grey);
+}
+
+.o-score-card {
+    background: var(--lighten-yellow);
+}
