@@ -5,4 +5,76 @@
     --dark-cyan: #34C3BE;
     --lighten-yellow: #F2B138;
     font-family: 'Outfit', sans-serif;
+
 }
+* {
+    padding: 0;
+    margin: 0;
+}
+
+h2, .logo, .undo {
+    display:flex;
+    gap: 10px;
+    align-items: center;
+    color: var(--grey)
+}
+
+.turn-icon {
+    width: 20px;
+    height: 20px;
+    background-size: 100%;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-image: url(./assets/icon-x-gray.svg);
+}
+
+.container {
+    height:100vh;
+    width: 100vw;
+    background-color: var(--primary);
+    display: grid;
+    grid-template-rows: 1fr 4fr 2fr;
+}
+
+.header {
+    grid-row: 1 / 2;
+    display: flex;
+    justify-content: space-evenly;
+    margin: 30px;
+}
+
+
+.game-status {
+    display: flex;
+    width: 15vw;
+    justify-content: center;
+    box-shadow: 0 10px 10px rgba(0, 0, 0, .3);
+    background-color: var(--secondary);
+    border-radius: 15px;
+}
+
+.undo button {
+    background-color: var(--grey);
+    border: none;
+    width: 50px;
+    height: 50px;
+    border-radius: 15px;
+}
+
+.invisible {
+    visibility: hidden;
+    display: none;
+}
+
+/* .game-status .svg {
+    display: none;
+} */
+
+.game-section {
+    grid-row: 2 / 3;
+}
+
+.score-section {
+    grid-row: 3 / 4;
+}
+
