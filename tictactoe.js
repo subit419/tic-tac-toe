@@ -80,7 +80,8 @@ function GameController (
         board.placeToken(row, column, getActivePlayer().token)
         switchPlayerTurn();
         printNewRound();
-        console.log(checkWinner());
+        // checkWinner();
+        console.log("is the game a tie?: "+ checkTie(board));
         screen.updateTurnDisplay();
     };
 
@@ -155,6 +156,9 @@ function GameController (
         }
     }
 
+    function checkTie (board) {
+        return board.getBoard().every(row => row.every(cell => cell.getValue() > 0))
+    }
 
     const checkWinner = () => {
 
