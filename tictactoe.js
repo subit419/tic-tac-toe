@@ -80,14 +80,16 @@ function GameController (
         board.placeToken(row, column, getActivePlayer().token)
         switchPlayerTurn();
         printNewRound();
-        checkWinner();
+        console.log(checkWinner());
         screen.updateTurnDisplay();
     };
 
-    const checkWinner = () => {
+    const allEqual = (arr) => arr.every(val => val === arr[0]);
+
+    const checkRows = (board) => {
         const numRows = board.getBoard().length;
         const numCols = board.getBoard()[0].length;
-        const allEqual = (arr) => arr.every(val => val === arr[0]);
+        
         // check all rows for a winner
 
         for (let row = 0; row < numRows; row++) {
@@ -98,12 +100,19 @@ function GameController (
                 if ((possibleWin.length == numCols) && (possibleWin[0] != 0)) {
  
                     if (allEqual(possibleWin)) {
-                        console.log ("Row win condition met")
+                        console.log ("row win condition met")
+                        return true;
                     }
                 }
             }
         }
-        // check all columns for a winner
+
+        return false;
+    }
+
+    const checkColumns = board => {
+        const numRows = board.getBoard().length;
+        const numCols = board.getBoard()[0].length;
 
         for (let column = 0; column < numRows; column++) {
             let possibleWin = [];
@@ -114,13 +123,46 @@ function GameController (
  
                     if (allEqual(possibleWin)) {
                         console.log ("column win condition met")
+                        return true;
                     }
                 }
             }
         }
+    }
 
-        // check diagonals for a winner
+    const checkDiagonals = board => {
+        // check diagonals for a winner hard coded
+        let possibleWinDiagUp = []
+        let possibleWinDiagDown = []
+        possibleWinDiagUp.push(board.getBoard()[0][0].getValue())
+        possibleWinDiagUp.push(board.getBoard()[1][1].getValue())
+        possibleWinDiagUp.push(board.getBoard()[2][2].getValue())
+
+        possibleWinDiagDown.push(board.getBoard()[0][2].getValue())
+        possibleWinDiagDown.push(board.getBoard()[1][1].getValue())
+        possibleWinDiagDown.push(board.getBoard()[2][0].getValue())
+
+
+        if ((allEqual(possibleWinDiagUp)) && possibleWinDiagUp[0] != 0) {
+            console.log ("diagonal up win condition met")
+            return true;
+            
+        }
         
+        if ((allEqual(possibleWinDiagDown)) && possibleWinDiagDown[0] != 0) {
+            console.log ("diagonal down win condition met")
+            return true;
+        }
+    }
+
+
+    const checkWinner = () => {
+
+        if (checkRows(board) || checkColumns(board) || checkDiagonals(board)){
+            return true;
+        } else {
+            return false;
+        }
     }
 
 
