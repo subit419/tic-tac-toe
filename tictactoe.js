@@ -93,17 +93,49 @@ function GameController (
 
 const game = GameController();
 
-const showTokenOutline = () => {
-
+const showTokenOutline = (e) => {
+    if (e.target.dataset.used > 0) return;
+    if (!e.target.style.backgroundImage) {
+        console.log("Setting background url")
+        if (game.getActivePlayer().token == 1) {
+            e.target.style.backgroundImage = "url('assets/icon-x-outline.svg')";
+        } else {
+            e.target.style.backgroundImage = "url('assets/icon-o-outline.svg')";
+        }
+    }
 }
 
 const gameBoardSquares = document.querySelectorAll('.game-cell');
 
+const activateBtn = (element) =>{
+    function removeTransition(e){
+        if(e.propertyName !== 'transform') return;
+        e.target.classList.remove('clicked');     
+    }
+    element.classList.add('clicked');
+    element.addEventListener('transitionend', removeTransition);
+}
+
+
 gameBoardSquares.forEach((cell) => {
     cell.addEventListener("click", (e) =>{
-        console.log("row: "+ e.target.dataset.row);
-        console.log("column: "+ e.target.dataset.column);
-        game.playRound(e.target.dataset.row, e.target.dataset.column);
-    });
+        if (e.target.dataset.used == 0) {
+            activateBtn(e.target)
+            if (game.getActivePlayer().token == 1) {
+                e.target.style.backgroundImage = "url('assets/icon-x.svg')";
+            } else {
+                e.target.style.backgroundImage = "url('assets/icon-o.svg')";
+            }
+            game.playRound(e.target.dataset.row, e.target.dataset.column);
+    
+            e.target.dataset.used++;
+        }
+    })
     cell.addEventListener("mouseover", showTokenOutline);
+
+    cell.addEventListener("mouseout", (e) => {
+        if (e.target.dataset.used == 0) {
+            e.target.style.backgroundImage = "";
+        }
+    })
 })
