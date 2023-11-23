@@ -80,7 +80,49 @@ function GameController (
         board.placeToken(row, column, getActivePlayer().token)
         switchPlayerTurn();
         printNewRound();
+        checkWinner();
+        screen.updateTurnDisplay();
     };
+
+    const checkWinner = () => {
+        const numRows = board.getBoard().length;
+        const numCols = board.getBoard()[0].length;
+        const allEqual = (arr) => arr.every(val => val === arr[0]);
+        // check all rows for a winner
+
+        for (let row = 0; row < numRows; row++) {
+            let possibleWin = [];
+            for (let column = 0; column < numCols; column++) {
+                possibleWin.push(board.getBoard()[row][column].getValue())
+
+                if ((possibleWin.length == numCols) && (possibleWin[0] != 0)) {
+ 
+                    if (allEqual(possibleWin)) {
+                        console.log ("Row win condition met")
+                    }
+                }
+            }
+        }
+        // check all columns for a winner
+
+        for (let column = 0; column < numRows; column++) {
+            let possibleWin = [];
+            for (let row = 0; row < numCols; row++) {
+                possibleWin.push(board.getBoard()[row][column].getValue())
+
+                if ((possibleWin.length == numCols) && (possibleWin[0] != 0)) {
+ 
+                    if (allEqual(possibleWin)) {
+                        console.log ("column win condition met")
+                    }
+                }
+            }
+        }
+
+        // check diagonals for a winner
+        
+    }
+
 
     //initial play game message
     printNewRound();
@@ -93,49 +135,63 @@ function GameController (
 
 const game = GameController();
 
-const showTokenOutline = (e) => {
-    if (e.target.dataset.used > 0) return;
-    if (!e.target.style.backgroundImage) {
-        console.log("Setting background url")
-        if (game.getActivePlayer().token == 1) {
-            e.target.style.backgroundImage = "url('assets/icon-x-outline.svg')";
-        } else {
-            e.target.style.backgroundImage = "url('assets/icon-o-outline.svg')";
+function DisplayController () {
+
+    const gameBoardSquares = document.querySelectorAll('.game-cell');
+    const playerTurnDiv = document.querySelector('.turn-icon');
+
+    const activateBtn = (element) =>{
+        function removeTransition(e){
+            if(e.propertyName !== 'transform') return;
+            e.target.classList.remove('clicked');     
         }
+        element.classList.add('clicked');
+        element.addEventListener('transitionend', removeTransition);
     }
-}
 
-const gameBoardSquares = document.querySelectorAll('.game-cell');
-
-const activateBtn = (element) =>{
-    function removeTransition(e){
-        if(e.propertyName !== 'transform') return;
-        e.target.classList.remove('clicked');     
-    }
-    element.classList.add('clicked');
-    element.addEventListener('transitionend', removeTransition);
-}
-
-
-gameBoardSquares.forEach((cell) => {
-    cell.addEventListener("click", (e) =>{
-        if (e.target.dataset.used == 0) {
-            activateBtn(e.target)
+    const showTokenOutline = (e) => {
+        if (e.target.dataset.used > 0) return;
+        if (!e.target.style.backgroundImage) {
             if (game.getActivePlayer().token == 1) {
-                e.target.style.backgroundImage = "url('assets/icon-x.svg')";
+                e.target.style.backgroundImage = "url('assets/icon-x-outline.svg')";
             } else {
-                e.target.style.backgroundImage = "url('assets/icon-o.svg')";
+                e.target.style.backgroundImage = "url('assets/icon-o-outline.svg')";
             }
-            game.playRound(e.target.dataset.row, e.target.dataset.column);
-    
-            e.target.dataset.used++;
         }
-    })
-    cell.addEventListener("mouseover", showTokenOutline);
+    }
 
-    cell.addEventListener("mouseout", (e) => {
-        if (e.target.dataset.used == 0) {
-            e.target.style.backgroundImage = "";
-        }
+    gameBoardSquares.forEach((cell) => {
+        cell.addEventListener("click", (e) =>{
+            if (e.target.dataset.used == 0) {
+                activateBtn(e.target)
+                if (game.getActivePlayer().token == 1) {
+                    e.target.style.backgroundImage = "url('assets/icon-x.svg')";
+                } else {
+                    e.target.style.backgroundImage = "url('assets/icon-o.svg')";
+                }
+                game.playRound(e.target.dataset.row, e.target.dataset.column);
+        
+                e.target.dataset.used++;
+            }
+        })
+        cell.addEventListener("mouseover", showTokenOutline);
+
+        cell.addEventListener("mouseout", (e) => {
+            if (e.target.dataset.used == 0) {
+                e.target.style.backgroundImage = "";
+            }
+        })
     })
-})
+
+    const updateTurnDisplay = () => {
+        if (game.getActivePlayer().token == 1) {
+            playerTurnDiv.style.backgroundImage = "url('assets/icon-x-gray.svg')";
+        } else {
+            playerTurnDiv.style.backgroundImage = "url('assets/icon-o-gray.svg')";
+        }
+    }
+
+    return {updateTurnDisplay}
+}
+
+const screen = DisplayController();
