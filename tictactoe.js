@@ -13,6 +13,10 @@ function Gameboard () {
 
     const getBoard = () => board;
 
+    const resetBoard = () => {
+        board.map((row) => row.map((cell) => cell.resetValue()))
+    }
+
     const placeToken = (row, column, player) => {
 
         // Check if the cell is taken already
@@ -27,7 +31,7 @@ function Gameboard () {
         console.log(boardWithCellValues);
     };
 
-    return {getBoard, placeToken, printBoard};
+    return {getBoard, placeToken, printBoard, resetBoard};
 
 }
 
@@ -39,10 +43,13 @@ function Cell() {
     }
 
     const getValue = () => value;
+
+    const resetValue = () => value = 0;
     
     return {
         addToken,
-        getValue
+        getValue,
+        resetValue
     };
 }
 
@@ -85,6 +92,7 @@ function GameController (
         screen.updateTurnDisplay();
     };
 
+    
     const allEqual = (arr) => arr.every(val => val === arr[0]);
 
     const checkRows = (board) => {
@@ -109,6 +117,16 @@ function GameController (
         }
 
         return false;
+    }
+
+    const restartGame = () => {
+        // reset the logical board
+        board.resetBoard();
+
+        // reset the turn to player X
+        if (getActivePlayer().token == 2 ){
+            switchPlayerTurn();
+        }
     }
 
     const checkColumns = board => {
@@ -175,7 +193,8 @@ function GameController (
 
     return {
         playRound,
-        getActivePlayer
+        getActivePlayer,
+        restartGame
     }; 
 }
 
@@ -185,6 +204,8 @@ function DisplayController () {
 
     const gameBoardSquares = document.querySelectorAll('.game-cell');
     const playerTurnDiv = document.querySelector('.turn-icon');
+    const restartButton = document.getElementById("restart-game");
+    const scoreHeaders = document.querySelectorAll('.score');
 
     const activateBtn = (element) =>{
         function removeTransition(e){
@@ -229,6 +250,27 @@ function DisplayController () {
         })
     })
 
+    restartButton.addEventListener('click', (e) => {
+        
+        game.restartGame();
+        resetDisplayBoard();
+        updateTurnDisplay();
+        resetScoreBoard();
+    })
+
+    const resetDisplayBoard = () => {
+        gameBoardSquares.forEach((cell) => {
+            cell.dataset.used = 0;
+            cell.style.backgroundImage = "";
+        })
+    }
+
+    const resetScoreBoard = () => {
+        scoreHeaders.forEach((score) => {
+            score.textContent = "0";
+        })
+    }
+   
     const updateTurnDisplay = () => {
         if (game.getActivePlayer().token == 1) {
             playerTurnDiv.style.backgroundImage = "url('assets/icon-x-gray.svg')";
