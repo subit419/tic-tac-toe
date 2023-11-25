@@ -73,6 +73,9 @@ function GameController (
     let activePlayer = players[0];
 
     let winningToken = 0;
+    let winningColumn = null;
+    let winningRow = null;
+    let winningDiag = null;
 
     const switchPlayerTurn = () => {
         activePlayer = activePlayer === players[0] ? players[1] : players[0];
@@ -90,7 +93,11 @@ function GameController (
         switchPlayerTurn();
         printNewRound();
         if (checkWinner() || checkTie(board)){
-            screen.displayWinnerModal(winningToken);
+            screen.colorWinningSquares(winningToken, winningColumn, winningDiag, winningRow);
+            setTimeout (() => {
+                screen.displayWinnerModal(winningToken);
+            }, 1000)
+            
         }
         
         screen.updateTurnDisplay();
@@ -113,7 +120,7 @@ function GameController (
                 if ((possibleWin.length == numCols) && (possibleWin[0] != 0)) {
  
                     if (allEqual(possibleWin)) {
-                        console.log ("row win condition met")
+                        winningRow = row;
                         winningToken = possibleWin[0];
                         return true;
                     }
@@ -127,6 +134,9 @@ function GameController (
     const restartGame = () => {
         // reset the logical board
         winningToken = 0;
+        winningColumn = null;
+        winningRow = null;
+        winningDiag = null;
         board.resetBoard();
 
         // reset the turn to player X
@@ -147,6 +157,7 @@ function GameController (
                 if ((possibleWin.length == numCols) && (possibleWin[0] != 0)) {
  
                     if (allEqual(possibleWin)) {
+                        winningColumn = column;
                         winningToken = possibleWin[0];
                         return true;
                     }
@@ -159,22 +170,24 @@ function GameController (
         // check diagonals for a winner hard coded
         let possibleWinDiagUp = []
         let possibleWinDiagDown = []
-        possibleWinDiagUp.push(board.getBoard()[0][0].getValue())
-        possibleWinDiagUp.push(board.getBoard()[1][1].getValue())
-        possibleWinDiagUp.push(board.getBoard()[2][2].getValue())
-
-        possibleWinDiagDown.push(board.getBoard()[0][2].getValue())
+        possibleWinDiagDown.push(board.getBoard()[0][0].getValue())
         possibleWinDiagDown.push(board.getBoard()[1][1].getValue())
-        possibleWinDiagDown.push(board.getBoard()[2][0].getValue())
+        possibleWinDiagDown.push(board.getBoard()[2][2].getValue())
+
+        possibleWinDiagUp.push(board.getBoard()[0][2].getValue())
+        possibleWinDiagUp.push(board.getBoard()[1][1].getValue())
+        possibleWinDiagUp.push(board.getBoard()[2][0].getValue())
 
 
         if ((allEqual(possibleWinDiagUp)) && possibleWinDiagUp[0] != 0) {
+            winningDiag = 2;
             winningToken = possibleWinDiagUp[0];
             return true;
             
         }
         
         if ((allEqual(possibleWinDiagDown)) && possibleWinDiagDown[0] != 0) {
+            winningDiag = 1;
             winningToken = possibleWinDiagDown[0];
             return true;
         }
@@ -268,6 +281,7 @@ function DisplayController () {
         gameBoardSquares.forEach((cell) => {
             cell.dataset.used = 0;
             cell.style.backgroundImage = "";
+            cell.style.backgroundColor = "var(--secondary)";
         })
     }
 
@@ -275,6 +289,59 @@ function DisplayController () {
         scoreHeaders.forEach((score) => {
             score.textContent = "0";
         })
+    }
+
+    const colorWinningSquares = (winningToken, winningColumn, winningDiag, winningRow) => {
+        console.log (winningColumn);
+        let winningColor = null;
+        let winningbgImage = null;
+
+        if (winningToken == 1) {
+            winningColor = "var(--dark-cyan)"
+            winningbgImage = "url('assets/icon-x-transparent.svg')"
+
+        } else {
+            winningColor = "var(--lighten-yellow)"
+            winningbgImage = "url('assets/icon-o-transparent.svg')"
+
+        }
+        
+        if (winningColumn != null) {
+            gameBoardSquares.forEach((cell) => {
+                if (cell.dataset.column == winningColumn) {
+                    cell.style.backgroundImage = winningbgImage;
+                    cell.style.backgroundColor = winningColor;
+                }
+            })
+
+        } else if (winningRow != null) {
+            gameBoardSquares.forEach((cell) => {
+                if (cell.dataset.row == winningRow) {
+                    cell.style.backgroundImage = winningbgImage;
+                    cell.style.backgroundColor = winningColor;
+                }
+            })
+
+        } else if (winningDiag != null) {
+            if (winningDiag == 1) {
+                gameBoardSquares[0].style.backgroundImage = winningbgImage;
+                gameBoardSquares[0].style.backgroundColor = winningColor;
+                gameBoardSquares[4].style.backgroundImage = winningbgImage;
+                gameBoardSquares[4].style.backgroundColor = winningColor;
+                gameBoardSquares[8].style.backgroundImage = winningbgImage;
+                gameBoardSquares[8].style.backgroundColor = winningColor;
+
+            } else {
+                gameBoardSquares[6].style.backgroundImage = winningbgImage;
+                gameBoardSquares[6].style.backgroundColor = winningColor;
+                gameBoardSquares[4].style.backgroundImage = winningbgImage;
+                gameBoardSquares[4].style.backgroundColor = winningColor;
+                gameBoardSquares[2].style.backgroundImage = winningbgImage;
+                gameBoardSquares[2].style.backgroundColor = winningColor;
+            }
+
+        }
+
     }
 
     const displayWinnerModal = (winningToken) => {
@@ -313,6 +380,10 @@ function DisplayController () {
             game.restartGame();
             resetDisplayBoard();
             updateTurnDisplay();
+            winningToken = null;
+            winningRow = null;
+            winningDiag = null;
+            winningColumn = null;
         }
     }
    
@@ -324,7 +395,7 @@ function DisplayController () {
         }
     }
 
-    return {updateTurnDisplay, displayWinnerModal}
+    return {updateTurnDisplay, displayWinnerModal, colorWinningSquares}
 }
 
 const screen = DisplayController();
