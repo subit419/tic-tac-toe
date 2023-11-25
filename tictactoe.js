@@ -72,6 +72,8 @@ function GameController (
 
     let activePlayer = players[0];
 
+    let winningToken = 0;
+
     const switchPlayerTurn = () => {
         activePlayer = activePlayer === players[0] ? players[1] : players[0];
     }
@@ -87,8 +89,10 @@ function GameController (
         board.placeToken(row, column, getActivePlayer().token)
         switchPlayerTurn();
         printNewRound();
-        // checkWinner();
-        console.log("is the game a tie?: "+ checkTie(board));
+        if (checkWinner() || checkTie(board)){
+            screen.displayWinnerModal(winningToken);
+        }
+        
         screen.updateTurnDisplay();
     };
 
@@ -110,6 +114,7 @@ function GameController (
  
                     if (allEqual(possibleWin)) {
                         console.log ("row win condition met")
+                        winningToken = possibleWin[0];
                         return true;
                     }
                 }
@@ -121,6 +126,7 @@ function GameController (
 
     const restartGame = () => {
         // reset the logical board
+        winningToken = 0;
         board.resetBoard();
 
         // reset the turn to player X
@@ -141,7 +147,7 @@ function GameController (
                 if ((possibleWin.length == numCols) && (possibleWin[0] != 0)) {
  
                     if (allEqual(possibleWin)) {
-                        console.log ("column win condition met")
+                        winningToken = possibleWin[0];
                         return true;
                     }
                 }
@@ -163,13 +169,13 @@ function GameController (
 
 
         if ((allEqual(possibleWinDiagUp)) && possibleWinDiagUp[0] != 0) {
-            console.log ("diagonal up win condition met")
+            winningToken = possibleWinDiagUp[0];
             return true;
             
         }
         
         if ((allEqual(possibleWinDiagDown)) && possibleWinDiagDown[0] != 0) {
-            console.log ("diagonal down win condition met")
+            winningToken = possibleWinDiagDown[0];
             return true;
         }
     }
@@ -270,6 +276,45 @@ function DisplayController () {
             score.textContent = "0";
         })
     }
+
+    const displayWinnerModal = (winningToken) => {
+        const modal = document.getElementById("myModal");
+        const span = document.getElementsByClassName("close")[0];
+        const gameOverMessageBox = document.getElementById("gameOverText");
+        const modalBanner = document.getElementById("modalBanner");
+        const tieScore = document.getElementById("tie-score");
+        const xScore = document.getElementById("x-player-score");
+        const oScore = document.getElementById("o-player-score");
+
+
+        
+
+        // Player X win
+        if (winningToken == 1) {
+            gameOverMessageBox.innerText = "X won!"
+            xScore.innerText++;
+
+            
+        // Player O Win
+        } else if (winningToken == 2) {
+            gameOverMessageBox.innerText = "O won!"
+            oScore.innerText++;
+            
+        // tie 
+        } else { 
+            gameOverMessageBox.innerText = "Tie game!"
+            tieScore.innerText++;
+        }
+
+        modal.style.display = "block"
+
+        span.onclick = function() {
+            modal.style.display = "none";
+            game.restartGame();
+            resetDisplayBoard();
+            updateTurnDisplay();
+        }
+    }
    
     const updateTurnDisplay = () => {
         if (game.getActivePlayer().token == 1) {
@@ -279,7 +324,7 @@ function DisplayController () {
         }
     }
 
-    return {updateTurnDisplay}
+    return {updateTurnDisplay, displayWinnerModal}
 }
 
 const screen = DisplayController();

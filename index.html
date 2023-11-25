@@ -45,17 +45,32 @@
         <div class="score-section">
             <div class="x-score-card">
                 <p>Player X</p>
-                <h2 class="score" id="x-h3layer-score">2</h2>
+                <h2 class="score" id="x-player-score">2</h2>
             </div>
             <div class="tie-score-card">
                 <p>Ties</p>
-                <h2 class="score" id="bot-score">1</h2>
+                <h2 class="score" id="tie-score">1</h2>
             </div>
             <div class="o-score-card">
                 <p>Player O</p>
-                <h2 class="score" id="o-h3layer-score">0</h2>
+                <h2 class="score" id="o-player-score">0</h2>
             </div>
         </div>
     </div>
+    <div id="myModal" class="modal">
+        <!-- Modal content -->
+        <div class="modal-content">
+          <div class="modal-header">
+            <span class="close">&times;</span>
+            <h2 id="modalBanner">Game Over!</h2>
+          </div>
+          <div class="modal-body">
+            <p id="gameOverText">Empty</p>
+          </div>
+          <div class="modal-footer">
+            <h3>Close this window to play again</h3>
+          </div>
+        </div>
+      </div>
 </body>
 </html>
